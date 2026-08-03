@@ -1,373 +1,276 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>지렁이 게임</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>홍길동 | 소개</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f7f7f8;
+    --text: #1a1a1a;
+    --text-soft: #6b6b6b;
+    --accent: #2f6feb;
+    --border: #e8e8e8;
+    --radius: 14px;
+    --max-width: 760px;
+  }
 
-    body {
-      background: #1a1a2e;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      font-family: 'Segoe UI', sans-serif;
-      color: #eee;
-    }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 12px;
-      color: #4ecca3;
-      letter-spacing: 2px;
-    }
+  html { scroll-behavior: smooth; }
 
-    #scoreboard {
-      display: flex;
-      gap: 40px;
-      margin-bottom: 16px;
-      font-size: 1.1rem;
-    }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
 
-    #scoreboard span { color: #4ecca3; font-weight: bold; }
+  .wrap {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
 
-    #game-container {
-      position: relative;
-    }
+  header.hero {
+    padding: 96px 0 64px;
+    text-align: center;
+  }
 
-    canvas {
-      border: 3px solid #4ecca3;
-      border-radius: 4px;
-      display: block;
-      background: #16213e;
-    }
+  .avatar {
+    width: 108px;
+    height: 108px;
+    border-radius: 50%;
+    margin: 0 auto 28px;
+    background: linear-gradient(135deg, #2f6feb, #6ea8fe);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    color: #fff;
+    font-weight: 700;
+  }
 
-    #overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(22, 33, 62, 0.88);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border-radius: 2px;
-    }
+  .hero h1 {
+    font-size: 2.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
 
-    #overlay h2 {
-      font-size: 1.8rem;
-      color: #4ecca3;
-      margin-bottom: 8px;
-    }
+  .hero .role {
+    color: var(--accent);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
 
-    #overlay p { font-size: 1rem; color: #aaa; margin-bottom: 24px; }
+  .hero .tagline {
+    color: var(--text-soft);
+    font-size: 1rem;
+    max-width: 520px;
+    margin: 0 auto;
+  }
 
-    button {
-      padding: 12px 36px;
-      font-size: 1rem;
-      background: #4ecca3;
-      color: #1a1a2e;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.2s;
-    }
+  section {
+    padding: 48px 0;
+    border-top: 1px solid var(--border);
+  }
 
-    button:hover { background: #38b28e; }
+  section h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-soft);
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
 
-    #controls {
-      margin-top: 16px;
-      font-size: 0.85rem;
-      color: #666;
-      text-align: center;
-    }
+  .about p {
+    color: var(--text);
+    font-size: 1rem;
+  }
 
-    /* Mobile D-pad */
-    #dpad {
-      display: none;
-      margin-top: 20px;
-      grid-template-columns: repeat(3, 52px);
-      grid-template-rows: repeat(3, 52px);
-      gap: 4px;
-    }
+  .about p + p { margin-top: 12px; }
 
-    #dpad button {
-      padding: 0;
-      width: 52px;
-      height: 52px;
-      font-size: 1.4rem;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  .skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
 
-    @media (max-width: 520px) {
-      canvas { width: 320px; height: 320px; }
-      #dpad { display: grid; }
-      #controls { display: none; }
-    }
-  </style>
+  .skill-tag {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 18px;
+  }
+
+  .timeline-date {
+    color: var(--text-soft);
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+
+  .timeline-content .title {
+    font-weight: 600;
+    font-size: 0.98rem;
+    margin-bottom: 2px;
+  }
+
+  .timeline-content .desc {
+    color: var(--text-soft);
+    font-size: 0.9rem;
+  }
+
+  .contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .contact-item:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .contact-item .icon {
+    width: 22px;
+    text-align: center;
+    font-size: 1.05rem;
+  }
+
+  .contact-item .label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-soft);
+    min-width: 76px;
+  }
+
+  .contact-item .value {
+    font-size: 0.95rem;
+  }
+
+  footer {
+    padding: 36px 0 56px;
+    text-align: center;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 520px) {
+    header.hero { padding: 64px 0 48px; }
+    .timeline-item { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
 </head>
 <body>
 
-<h1>🐍 지렁이 게임</h1>
+<div class="wrap">
 
-<div id="scoreboard">
-  <div>점수: <span id="score">0</span></div>
-  <div>최고점수: <span id="highscore">0</span></div>
-  <div>레벨: <span id="level">1</span></div>
+  <header class="hero">
+    <div class="avatar">홍</div>
+    <h1>홍길동</h1>
+    <div class="role">프론트엔드 개발자</div>
+    <p class="tagline">사용자 경험을 고민하는 프론트엔드 개발자입니다. 배운 것을 기록하고 나누는 것을 좋아합니다.</p>
+  </header>
+
+  <section class="about">
+    <h2>About Me</h2>
+    <p>안녕하세요, 홍길동입니다. 웹 프론트엔드 개발을 중심으로 다양한 프로젝트를 진행하며 사용자에게 더 나은 경험을 제공하는 방법을 고민하고 있습니다.</p>
+    <p>새로운 기술을 배우는 것을 좋아하고, 문제를 작은 단위로 나누어 차근차근 해결하는 과정을 즐깁니다.</p>
+  </section>
+
+  <section class="skills">
+    <h2>Skills &amp; Interests</h2>
+    <div class="skills-grid">
+      <span class="skill-tag">JavaScript</span>
+      <span class="skill-tag">TypeScript</span>
+      <span class="skill-tag">React</span>
+      <span class="skill-tag">HTML/CSS</span>
+      <span class="skill-tag">Node.js</span>
+      <span class="skill-tag">UI/UX</span>
+    </div>
+  </section>
+
+  <section class="career">
+    <h2>Career &amp; Education</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">2023 - 현재</div>
+        <div class="timeline-content">
+          <div class="title">주식회사 예시 · 프론트엔드 개발자</div>
+          <div class="desc">웹 서비스 UI 개발 및 사용자 경험 개선 업무를 담당하고 있습니다.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2019 - 2023</div>
+        <div class="timeline-content">
+          <div class="title">예시대학교 · 컴퓨터공학과</div>
+          <div class="desc">컴퓨터공학을 전공하며 소프트웨어 개발 전반에 대해 배웠습니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact">
+    <h2>Contact</h2>
+    <div class="contact-list">
+      <a class="contact-item" href="mailto:example@email.com">
+        <span class="icon">✉️</span>
+        <span class="label">Email</span>
+        <span class="value">example@email.com</span>
+      </a>
+      <a class="contact-item" href="https://github.com/example" target="_blank" rel="noopener">
+        <span class="icon">🐙</span>
+        <span class="label">GitHub</span>
+        <span class="value">github.com/example</span>
+      </a>
+      <a class="contact-item" href="https://instagram.com/example" target="_blank" rel="noopener">
+        <span class="icon">📷</span>
+        <span class="label">Instagram</span>
+        <span class="value">@example</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2026 홍길동. All rights reserved.
+  </footer>
+
 </div>
 
-<div id="game-container">
-  <canvas id="canvas" width="480" height="480"></canvas>
-
-  <div id="overlay">
-    <h2 id="overlay-title">지렁이 게임</h2>
-    <p id="overlay-msg">방향키 또는 WASD로 조작하세요</p>
-    <button id="start-btn">게임 시작</button>
-  </div>
-</div>
-
-<div id="dpad">
-  <div></div>
-  <button id="btn-up">▲</button>
-  <div></div>
-  <button id="btn-left">◀</button>
-  <div></div>
-  <button id="btn-right">▶</button>
-  <div></div>
-  <button id="btn-down">▼</button>
-  <div></div>
-</div>
-
-<div id="controls">방향키 / WASD 조작 &nbsp;|&nbsp; P 일시정지</div>
-
-<script>
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-
-  const COLS = 20, ROWS = 20;
-  const CELL = canvas.width / COLS;
-
-  const scoreEl = document.getElementById('score');
-  const highscoreEl = document.getElementById('highscore');
-  const levelEl = document.getElementById('level');
-  const overlay = document.getElementById('overlay');
-  const overlayTitle = document.getElementById('overlay-title');
-  const overlayMsg = document.getElementById('overlay-msg');
-  const startBtn = document.getElementById('start-btn');
-
-  const DIRS = { UP: {x:0,y:-1}, DOWN: {x:0,y:1}, LEFT: {x:-1,y:0}, RIGHT: {x:1,y:0} };
-
-  let snake, dir, nextDir, food, score, highscore, level, speed, loopId, paused, running;
-
-  highscore = Number(localStorage.getItem('snakeHigh') || 0);
-  highscoreEl.textContent = highscore;
-
-  function init() {
-    snake = [
-      {x:10, y:10},
-      {x:9,  y:10},
-      {x:8,  y:10},
-    ];
-    dir = DIRS.RIGHT;
-    nextDir = DIRS.RIGHT;
-    score = 0;
-    level = 1;
-    speed = 150;
-    paused = false;
-    running = true;
-    scoreEl.textContent = 0;
-    levelEl.textContent = 1;
-    placeFood();
-    if (loopId) clearTimeout(loopId);
-    loop();
-  }
-
-  function placeFood() {
-    let pos;
-    do {
-      pos = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) };
-    } while (snake.some(s => s.x === pos.x && s.y === pos.y));
-    food = pos;
-  }
-
-  function loop() {
-    if (!running || paused) return;
-    loopId = setTimeout(() => {
-      update();
-      render();
-      loop();
-    }, speed);
-  }
-
-  function update() {
-    dir = nextDir;
-    const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-
-    // Wall collision
-    if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
-      gameOver(); return;
-    }
-    // Self collision
-    if (snake.some(s => s.x === head.x && s.y === head.y)) {
-      gameOver(); return;
-    }
-
-    snake.unshift(head);
-
-    if (head.x === food.x && head.y === food.y) {
-      score += level * 10;
-      scoreEl.textContent = score;
-      if (score > highscore) {
-        highscore = score;
-        highscoreEl.textContent = highscore;
-        localStorage.setItem('snakeHigh', highscore);
-      }
-      // Level up every 50 points
-      const newLevel = Math.floor(score / 50) + 1;
-      if (newLevel !== level) {
-        level = newLevel;
-        levelEl.textContent = level;
-        speed = Math.max(60, 150 - (level - 1) * 15);
-      }
-      placeFood();
-    } else {
-      snake.pop();
-    }
-  }
-
-  function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Grid lines (subtle)
-    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
-    ctx.lineWidth = 0.5;
-    for (let i = 0; i <= COLS; i++) {
-      ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, canvas.height); ctx.stroke();
-    }
-    for (let j = 0; j <= ROWS; j++) {
-      ctx.beginPath(); ctx.moveTo(0, j * CELL); ctx.lineTo(canvas.width, j * CELL); ctx.stroke();
-    }
-
-    // Food
-    const fx = food.x * CELL + CELL / 2;
-    const fy = food.y * CELL + CELL / 2;
-    ctx.fillStyle = '#ff6b6b';
-    ctx.beginPath();
-    ctx.arc(fx, fy, CELL / 2 - 3, 0, Math.PI * 2);
-    ctx.fill();
-    // Shine
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.beginPath();
-    ctx.arc(fx - 3, fy - 3, 4, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Snake
-    snake.forEach((seg, i) => {
-      const ratio = i / snake.length;
-      const green = Math.round(200 - ratio * 80);
-      ctx.fillStyle = i === 0 ? '#4ecca3' : `rgb(30, ${green}, 100)`;
-      const padding = i === 0 ? 1 : 2;
-      const r = i === 0 ? 4 : 3;
-      roundRect(
-        ctx,
-        seg.x * CELL + padding,
-        seg.y * CELL + padding,
-        CELL - padding * 2,
-        CELL - padding * 2,
-        r
-      );
-      ctx.fill();
-
-      // Eyes on head
-      if (i === 0) {
-        ctx.fillStyle = '#1a1a2e';
-        const ex = seg.x * CELL + CELL / 2;
-        const ey = seg.y * CELL + CELL / 2;
-        const eyeR = 2.5;
-
-        let e1, e2;
-        if (dir === DIRS.RIGHT)      { e1={x:ex+4,y:ey-4}; e2={x:ex+4,y:ey+4}; }
-        else if (dir === DIRS.LEFT)  { e1={x:ex-4,y:ey-4}; e2={x:ex-4,y:ey+4}; }
-        else if (dir === DIRS.UP)    { e1={x:ex-4,y:ey-4}; e2={x:ex+4,y:ey-4}; }
-        else                          { e1={x:ex-4,y:ey+4}; e2={x:ex+4,y:ey+4}; }
-
-        [e1, e2].forEach(e => {
-          ctx.beginPath(); ctx.arc(e.x, e.y, eyeR, 0, Math.PI * 2); ctx.fill();
-        });
-      }
-    });
-  }
-
-  function roundRect(ctx, x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    ctx.lineTo(x + r, y + h);
-    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
-    ctx.closePath();
-  }
-
-  function gameOver() {
-    running = false;
-    clearTimeout(loopId);
-    overlayTitle.textContent = '게임 오버!';
-    overlayMsg.textContent = `점수: ${score}`;
-    startBtn.textContent = '다시 시작';
-    overlay.style.display = 'flex';
-  }
-
-  function togglePause() {
-    if (!running) return;
-    paused = !paused;
-    if (!paused) loop();
-  }
-
-  // Keyboard
-  document.addEventListener('keydown', e => {
-    const map = {
-      ArrowUp: DIRS.UP, ArrowDown: DIRS.DOWN, ArrowLeft: DIRS.LEFT, ArrowRight: DIRS.RIGHT,
-      w: DIRS.UP, s: DIRS.DOWN, a: DIRS.LEFT, d: DIRS.RIGHT,
-      W: DIRS.UP, S: DIRS.DOWN, A: DIRS.LEFT, D: DIRS.RIGHT,
-    };
-    if (map[e.key]) {
-      const d = map[e.key];
-      // Prevent reversing
-      if (d.x !== -dir.x || d.y !== -dir.y) nextDir = d;
-      e.preventDefault();
-    }
-    if (e.key === 'p' || e.key === 'P') togglePause();
-  });
-
-  // D-pad buttons
-  function bindDpad(id, d) {
-    document.getElementById(id).addEventListener('click', () => {
-      if (d.x !== -dir.x || d.y !== -dir.y) nextDir = d;
-    });
-  }
-  bindDpad('btn-up',    DIRS.UP);
-  bindDpad('btn-down',  DIRS.DOWN);
-  bindDpad('btn-left',  DIRS.LEFT);
-  bindDpad('btn-right', DIRS.RIGHT);
-
-  startBtn.addEventListener('click', () => {
-    overlay.style.display = 'none';
-    startBtn.textContent = '다시 시작';
-    init();
-  });
-
-  // Initial render placeholder
-  render();
-</script>
 </body>
 </html>
