@@ -8,13 +8,15 @@ import '../../support/in_memory_token_storage.dart';
 
 void main() {
   group('unwrapEnvelope', () {
-    test('success:true면 data를 반환한다', () {
+    test('success:true면 data와 meta를 반환한다', () {
       final result = unwrapEnvelope({
         'success': true,
         'data': {'foo': 'bar'},
         'error': null,
+        'meta': {'total': 3},
       });
-      expect(result, {'foo': 'bar'});
+      expect(result.data, {'foo': 'bar'});
+      expect(result.meta, {'total': 3});
     });
 
     test('success:false면 PiumApiException을 던진다', () {

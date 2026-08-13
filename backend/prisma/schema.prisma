@@ -79,7 +79,7 @@ model Meetup {
   regionGungu    String?    @map("region_gungu")
   level          String?
   fee            Int?
-  scheduleText   String?    @map("schedule_text")
+  schedule       Json
   createdAt      DateTime   @default(now()) @map("created_at")
 
   host          User            @relation("MeetupHost", fields: [hostId], references: [id])
@@ -93,12 +93,13 @@ model Meetup {
 }
 
 model MeetupMember {
-  id       String     @id @default(uuid())
-  meetupId String     @map("meetup_id")
-  userId   String     @map("user_id")
-  role     MemberRole @default(member)
-  joinedAt DateTime   @default(now()) @map("joined_at")
-  leftAt   DateTime?  @map("left_at")
+  id          String     @id @default(uuid())
+  meetupId    String     @map("meetup_id")
+  userId      String     @map("user_id")
+  role        MemberRole @default(member)
+  joinMessage String?    @map("join_message")
+  joinedAt    DateTime   @default(now()) @map("joined_at")
+  leftAt      DateTime?  @map("left_at")
 
   meetup Meetup @relation(fields: [meetupId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -33,12 +33,12 @@ describe('Auth (e2e)', () => {
   });
 
   afterAll(async () => {
-    await prisma.deviceToken.deleteMany({ where: { user: { kakaoId: { startsWith: 'mock-e2e-' } } } });
-    await prisma.user.deleteMany({ where: { kakaoId: { startsWith: 'mock-e2e-' } } });
+    await prisma.deviceToken.deleteMany({ where: { user: { kakaoId: { startsWith: 'mock-e2e-auth-' } } } });
+    await prisma.user.deleteMany({ where: { kakaoId: { startsWith: 'mock-e2e-auth-' } } });
     await app.close();
   });
 
-  const kakaoToken = `e2e-${Date.now()}`;
+  const kakaoToken = `e2e-auth-${Date.now()}`;
 
   it('카카오 로그인으로 JWT 발급 + 신규 사용자 생성', async () => {
     const res = await request(app.getHttpServer())

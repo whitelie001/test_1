@@ -1,25 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// 운동 모임 목록 화면 (placeholder).
-///
-/// 현재는 스캐폴드 단계로, Firestore 연동(모임 CRUD)은 다음 개발 단계에서
-/// `GroupRepository`를 통해 붙일 예정이다.
-class GroupListScreen extends StatelessWidget {
-  const GroupListScreen({super.key});
+import '../../../../core/network/api_exception.dart';
+import '../group_providers.dart';
+
+/// 운동 모임 목록 화면. 반경 내 모임을 서버에서 불러와 보여준다.
+class GroupListScreen extends ConsumerWidget {
+  const GroupListScreen({super.key, this.onCreatePressed, this.onMeetupTap});
+
+  final VoidCallback? onCreatePressed;
+  final void Function(String meetupId)? onMeetupTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final meetupsAsync = ref.watch(meetupListProvider);
+
     return Scaffold(
       appBar: AppBar(title: const Text('pium')),
-      body: const Center(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Text(
-            '운동 모임이 아직 없어요.\n모임을 만들고 함께 성장시켜 보세요!',
-            textAlign: TextAlign.center,
-          ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: onCreatePressed,
+        child: const Icon(Icons.add),
+      ),
+      body: RefreshIndicator(
+        onRefresh: () => ref.refresh(meetupListProvider.future),
+        child: meetupsAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => _ErrorView(error: error),
+          data: (result) {
+            if (result.meetups.isEmpty) {
+              return const _EmptyView();
+            }
+            return ListView.builder(
+              itemCount: result.meetups.length,
+              itemBuilder: (context, index) {
+                final meetup = result.meetups[index];
+                return ListTile(
+                  title: Text(meetup.name),
+                  subtitle: Text('${meetup.sport} · ${meetup.locationName}'),
+                  trailing: Text('${meetup.currentMembers}/${meetup.maxMembers}'),
+                  onTap: () => onMeetupTap?.call(meetup.id),
+                );
+              },
+            );
+          },
         ),
       ),
     );
+  }
+}
+
+class _EmptyView extends StatelessWidget {
+  const _EmptyView();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: const [
+        Padding(
+          padding: EdgeInsets.only(top: 120),
+          child: Center(
+            child: Text(
+              '운동 모임이 아직 없어요.\n모임을 만들고 함께 성장시켜 보세요!',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  const _ErrorView({required this.error});
+
+  final Object error;
+
+  @override
+  Widget build(BuildContext context) {
+    final message = switch (error) {
+      PiumApiException(:final message) => message,
+      NetworkUnavailableException(:final message) => message,
+      _ => '알 수 없는 오류가 발생했습니다',
+    };
+    return Center(child: Text(message));
   }
 }
