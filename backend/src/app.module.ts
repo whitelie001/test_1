@@ -10,6 +10,8 @@ import { MeetupsModule } from './meetups/meetups.module';
 import { UsersModule } from './users/users.module';
 import { AnchorsModule } from './anchors/anchors.module';
 import { CheckinsModule } from './checkins/checkins.module';
+import { GrowthModule } from './growth/growth.module';
+import { RankingsModule } from './rankings/rankings.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { CheckinsModule } from './checkins/checkins.module';
     UsersModule,
     AnchorsModule,
     CheckinsModule,
+    GrowthModule,
+    RankingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

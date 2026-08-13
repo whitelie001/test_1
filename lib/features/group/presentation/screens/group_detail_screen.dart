@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../group_providers.dart';
+import '../widgets/growth_mascot_widget.dart';
 
-/// 모임 상세 화면. 가입/탈퇴/GPS 체크인 진입 액션을 제공한다.
-/// 성장 마스코트 등은 Phase 4에서 추가한다.
+/// 모임 상세 화면. 성장 마스코트, 가입/탈퇴/GPS 체크인 진입 액션을 제공한다.
 class GroupDetailScreen extends ConsumerStatefulWidget {
   const GroupDetailScreen({super.key, required this.meetupId});
 
@@ -62,6 +62,8 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                GrowthMascotWidget(meetupId: meetup.id),
+                const SizedBox(height: 16),
                 Text(meetup.name, style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 8),
                 Text('${meetup.sport} · ${meetup.locationName}'),

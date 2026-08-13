@@ -1,11 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../auth/presentation/auth_providers.dart';
+import '../data/growth_repository.dart';
 import '../data/meetup_repository.dart';
 import '../domain/meetup.dart';
 
 final meetupRepositoryProvider = Provider<MeetupRepository>((ref) {
   return MeetupRepository(apiClient: ref.watch(apiClientProvider));
+});
+
+final growthRepositoryProvider = Provider<GrowthRepository>((ref) {
+  return GrowthRepository(apiClient: ref.watch(apiClientProvider));
+});
+
+final growthStatusProvider =
+    FutureProvider.autoDispose.family<GrowthStatus, String>((ref, meetupId) async {
+  return ref.watch(growthRepositoryProvider).getGrowth(meetupId);
 });
 
 /// 모임 목록 조회 파라미터. 지금은 서울 시청 좌표를 기본값으로 쓴다 —

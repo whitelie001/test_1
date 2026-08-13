@@ -6,17 +6,32 @@ import '../group_providers.dart';
 
 /// 운동 모임 목록 화면. 반경 내 모임을 서버에서 불러와 보여준다.
 class GroupListScreen extends ConsumerWidget {
-  const GroupListScreen({super.key, this.onCreatePressed, this.onMeetupTap});
+  const GroupListScreen({
+    super.key,
+    this.onCreatePressed,
+    this.onMeetupTap,
+    this.onRankingsPressed,
+  });
 
   final VoidCallback? onCreatePressed;
   final void Function(String meetupId)? onMeetupTap;
+  final VoidCallback? onRankingsPressed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final meetupsAsync = ref.watch(meetupListProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('pium')),
+      appBar: AppBar(
+        title: const Text('pium'),
+        actions: [
+          IconButton(
+            onPressed: onRankingsPressed,
+            icon: const Icon(Icons.leaderboard_outlined),
+            tooltip: '랭킹',
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: onCreatePressed,
         child: const Icon(Icons.add),

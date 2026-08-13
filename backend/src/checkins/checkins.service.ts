@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { AnchorsService } from '../anchors/anchors.service';
+import { GrowthService } from '../growth/growth.service';
 import {
   CheckinAlreadyActiveException,
   CheckinNotFoundException,
@@ -42,6 +43,7 @@ export class CheckinsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly anchorsService: AnchorsService,
+    private readonly growthService: GrowthService,
   ) {}
 
   async enter(meetupId: string, userId: string, dto: CheckinEnterDto) {
@@ -171,6 +173,14 @@ export class CheckinsService {
         piumScoreEarned: score,
       },
     });
+
+    // 성장 단계는 실시간 계산이라 별도 저장이 필요 없지만, 새 완료 체크인이
+    // 방금 반영된 지표로 성장 이력(growth_history)이 갱신되도록 즉시 재계산한다.
+    const session = await this.prisma.meetupSession.findUniqueOrThrow({
+      where: { id: checkin.sessionId },
+      select: { meetupId: true },
+    });
+    await this.growthService.getGrowth(session.meetupId);
 
     return {
       status: 'completed',
