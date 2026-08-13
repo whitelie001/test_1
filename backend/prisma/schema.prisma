@@ -1,0 +1,357 @@
+// pium 백엔드 Prisma 스키마.
+// "피움 API 기획서 v1.0" 및 /root/.claude/plans/api-elegant-hinton.md 기준.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── 사용자 ────────────────────────────────────────────────────────────────
+
+model User {
+  id              String    @id @default(uuid())
+  kakaoId         String    @unique @map("kakao_id")
+  nickname        String
+  profileImageUrl String?   @map("profile_image_url")
+  favoriteSports  String[]  @map("favorite_sports")
+  regionSido      String?   @map("region_sido")
+  regionGungu     String?   @map("region_gungu")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  withdrawnAt     DateTime? @map("withdrawn_at")
+
+  deviceTokens     DeviceToken[]
+  hostedMeetups    Meetup[]       @relation("MeetupHost")
+  meetupMembers    MeetupMember[]
+  checkins         Checkin[]
+  anchorsActivated Anchor[]       @relation("AnchorActivatedBy")
+  piumScore        UserPiumScore?
+  feedPosts        FeedPost[]
+  feedReactions    FeedReaction[]
+  userBadges       UserBadge[]
+  notifications    Notification[]
+
+  @@map("users")
+}
+
+model DeviceToken {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  token      String
+  platform   String
+  lastSeenAt DateTime @default(now()) @map("last_seen_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, token])
+  @@map("device_tokens")
+}
+
+// ── 모임 ──────────────────────────────────────────────────────────────────
+
+enum MeetupType {
+  small
+  large
+}
+
+enum MemberRole {
+  host
+  co_host
+  member
+}
+
+model Meetup {
+  id             String     @id @default(uuid())
+  hostId         String     @map("host_id")
+  name           String
+  sport          String
+  description    String?
+  meetupType     MeetupType @map("meetup_type")
+  maxMembers     Int        @map("max_members")
+  currentMembers Int        @default(1) @map("current_members")
+  lat            Float
+  lng            Float
+  locationName   String     @map("location_name")
+  regionSido     String?    @map("region_sido")
+  regionGungu    String?    @map("region_gungu")
+  level          String?
+  fee            Int?
+  scheduleText   String?    @map("schedule_text")
+  createdAt      DateTime   @default(now()) @map("created_at")
+
+  host          User            @relation("MeetupHost", fields: [hostId], references: [id])
+  members       MeetupMember[]
+  sessions      MeetupSession[]
+  anchors       Anchor[]
+  growthHistory GrowthHistory[]
+  feedPosts     FeedPost[]
+
+  @@map("meetups")
+}
+
+model MeetupMember {
+  id       String     @id @default(uuid())
+  meetupId String     @map("meetup_id")
+  userId   String     @map("user_id")
+  role     MemberRole @default(member)
+  joinedAt DateTime   @default(now()) @map("joined_at")
+  leftAt   DateTime?  @map("left_at")
+
+  meetup Meetup @relation(fields: [meetupId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("meetup_members")
+}
+
+enum SessionStatus {
+  scheduled
+  completed
+  cancelled
+}
+
+/// 문서에 명시적 "세션" 엔티티는 없지만 연속출석·모임횟수·누적모임수 계산에
+/// 회차 단위가 필요해 도입. 체크인 입장 시 당일 세션을 find-or-create로
+/// 지연 생성한다(별도 "세션 생성" API 없음).
+model MeetupSession {
+  id          String        @id @default(uuid())
+  meetupId    String        @map("meetup_id")
+  sessionDate DateTime      @map("session_date") @db.Date
+  status      SessionStatus @default(scheduled)
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  meetup   Meetup    @relation(fields: [meetupId], references: [id], onDelete: Cascade)
+  checkins Checkin[]
+
+  @@unique([meetupId, sessionDate])
+  @@map("meetup_sessions")
+}
+
+// ── GPS 체크인 / 팀장 앵커 ────────────────────────────────────────────────
+
+enum CheckinStatus {
+  active
+  completed
+  invalidated
+}
+
+model Checkin {
+  id                  String        @id @default(uuid())
+  sessionId           String        @map("session_id")
+  userId              String        @map("user_id")
+  status              CheckinStatus @default(active)
+  enteredAt           DateTime      @default(now()) @map("entered_at")
+  exitedAt            DateTime?     @map("exited_at")
+  lastLat             Float?        @map("last_lat")
+  lastLng             Float?        @map("last_lng")
+  lastLocationAt      DateTime?     @map("last_location_at")
+  isInRange           Boolean       @default(true) @map("is_in_range")
+  elapsedSeconds      Int           @default(0) @map("elapsed_seconds")
+  rangeStateChangedAt DateTime      @default(now()) @map("range_state_changed_at")
+  anchorId            String?       @map("anchor_id")
+  piumScoreEarned     Decimal?      @map("pium_score_earned")
+  date                DateTime      @db.Date
+
+  session MeetupSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anchor  Anchor?       @relation(fields: [anchorId], references: [id])
+
+  @@map("checkins")
+}
+
+enum AnchorStatus {
+  active
+  expired
+  disconnected
+  failed_over
+}
+
+model Anchor {
+  id                   String       @id @default(uuid())
+  meetupId             String       @map("meetup_id")
+  activatedBy          String       @map("activated_by")
+  lat                  Float
+  lng                  Float
+  status               AnchorStatus @default(active)
+  activatedAt          DateTime     @default(now()) @map("activated_at")
+  validFrom            DateTime     @map("valid_from")
+  validUntil           DateTime     @map("valid_until")
+  lastPingAt           DateTime     @default(now()) @map("last_ping_at")
+  failoverFromAnchorId String?      @map("failover_from_anchor_id")
+
+  meetup    Meetup    @relation(fields: [meetupId], references: [id], onDelete: Cascade)
+  activator User      @relation("AnchorActivatedBy", fields: [activatedBy], references: [id])
+  checkins  Checkin[]
+
+  @@map("anchors")
+}
+
+// ── 피움 성장 / 랭킹 ─────────────────────────────────────────────────────
+
+model GrowthHistory {
+  id         String   @id @default(uuid())
+  meetupId   String   @map("meetup_id")
+  level      Int
+  achievedAt DateTime @default(now()) @map("achieved_at")
+  score      Decimal
+  metrics    Json
+
+  meetup Meetup @relation(fields: [meetupId], references: [id], onDelete: Cascade)
+
+  @@map("growth_history")
+}
+
+model UserPiumScore {
+  userId          String   @id @map("user_id")
+  attendanceScore Decimal  @default(0) @map("attendance_score")
+  streakScore     Decimal  @default(0) @map("streak_score")
+  eventScore      Decimal  @default(0) @map("event_score")
+  totalScore      Decimal  @default(0) @map("total_score")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_pium_scores")
+}
+
+enum RankingScope {
+  national
+  regional
+  sport
+  meetup
+}
+
+model RankingSnapshot {
+  id       String       @id @default(uuid())
+  scope    RankingScope
+  scopeKey String?      @map("scope_key")
+  period   String
+  rank     Int
+  meetupId String       @map("meetup_id")
+  score    Decimal
+
+  @@index([scope, scopeKey, period])
+  @@map("ranking_snapshots")
+}
+
+// ── 활동 공유(피드) ──────────────────────────────────────────────────────
+
+model FeedPost {
+  id        String    @id @default(uuid())
+  meetupId  String    @map("meetup_id")
+  sessionId String?   @map("session_id")
+  authorId  String    @map("author_id")
+  content   String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  meetup    Meetup         @relation(fields: [meetupId], references: [id], onDelete: Cascade)
+  author    User           @relation(fields: [authorId], references: [id])
+  media     FeedMedia[]
+  reactions FeedReaction[]
+
+  @@map("feed_posts")
+}
+
+enum FeedMediaType {
+  photo
+  video
+}
+
+model FeedMedia {
+  id              String        @id @default(uuid())
+  postId          String        @map("post_id")
+  type            FeedMediaType
+  storageKey      String        @map("storage_key")
+  url             String
+  orderIndex      Int           @map("order_index")
+  durationSeconds Int?          @map("duration_seconds")
+
+  post FeedPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("feed_media")
+}
+
+model FeedReaction {
+  id     String @id @default(uuid())
+  postId String @map("post_id")
+  userId String @map("user_id")
+  emoji  String
+
+  post FeedPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId, emoji])
+  @@map("feed_reactions")
+}
+
+// ── 배지 ─────────────────────────────────────────────────────────────────
+
+model Badge {
+  id   String @id @default(uuid())
+  name String
+  icon String
+
+  userBadges UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id       String   @id @default(uuid())
+  userId   String   @map("user_id")
+  badgeId  String   @map("badge_id")
+  earnedAt DateTime @default(now()) @map("earned_at")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+// ── 알림 ─────────────────────────────────────────────────────────────────
+
+enum NotificationType {
+  checkin_reminder
+  growth_achieved
+  ranking_change
+  new_member
+  event_notice
+  anchor_disconnected
+  checkin_completed
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  body      String
+  payload   Json?
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+  readAt    DateTime?        @map("read_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+// ── 이벤트 연계 ──────────────────────────────────────────────────────────
+
+model Event {
+  id                      String    @id @default(uuid())
+  name                    String
+  type                    String
+  status                  String
+  startDate               DateTime  @map("start_date")
+  endDate                 DateTime? @map("end_date")
+  requiredGrowthLevel     Int?      @map("required_growth_level")
+  requiredAttendanceCount Int?      @map("required_attendance_count")
+  siteUrl                 String    @map("site_url")
+
+  @@map("events")
+}
