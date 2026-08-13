@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../group_providers.dart';
 
-/// 모임 상세 화면. 가입/탈퇴 액션을 제공한다.
-/// 체크인 진입, 성장 마스코트 등은 각 기능 단계(Phase 3/4)에서 추가한다.
+/// 모임 상세 화면. 가입/탈퇴/GPS 체크인 진입 액션을 제공한다.
+/// 성장 마스코트 등은 Phase 4에서 추가한다.
 class GroupDetailScreen extends ConsumerStatefulWidget {
   const GroupDetailScreen({super.key, required this.meetupId});
 
@@ -80,6 +81,13 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen> {
                     OutlinedButton(
                       onPressed: _isProcessing ? null : _leave,
                       child: const Text('탈퇴하기'),
+                    ),
+                    const SizedBox(width: 8),
+                    TextButton(
+                      onPressed: () => context.push(
+                        '/meetups/${meetup.id}/checkin?lat=${meetup.lat}&lng=${meetup.lng}',
+                      ),
+                      child: const Text('GPS 체크인'),
                     ),
                   ],
                 ),

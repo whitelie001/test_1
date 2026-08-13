@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../features/auth/presentation/screens/login_screen.dart';
+import '../features/checkin/presentation/screens/checkin_screen.dart';
 import '../features/group/presentation/screens/group_create_screen.dart';
 import '../features/group/presentation/screens/group_detail_screen.dart';
 import '../features/group/presentation/screens/group_list_screen.dart';
@@ -40,6 +41,14 @@ final GoRouter piumRouter = GoRouter(
       path: '/meetups/:id',
       builder: (context, state) => GroupDetailScreen(
         meetupId: state.pathParameters['id']!,
+      ),
+    ),
+    GoRoute(
+      path: '/meetups/:id/checkin',
+      builder: (context, state) => CheckinScreen(
+        meetupId: state.pathParameters['id']!,
+        targetLat: double.parse(state.uri.queryParameters['lat']!),
+        targetLng: double.parse(state.uri.queryParameters['lng']!),
       ),
     ),
   ],

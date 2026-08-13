@@ -151,6 +151,7 @@ model Checkin {
   isInRange           Boolean       @default(true) @map("is_in_range")
   elapsedSeconds      Int           @default(0) @map("elapsed_seconds")
   rangeStateChangedAt DateTime      @default(now()) @map("range_state_changed_at")
+  outOfRangeSince     DateTime?     @map("out_of_range_since")
   anchorId            String?       @map("anchor_id")
   piumScoreEarned     Decimal?      @map("pium_score_earned")
   date                DateTime      @db.Date

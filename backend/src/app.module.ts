@@ -8,6 +8,8 @@ import { RedisModule } from './redis/redis.module';
 import { AuthModule } from './auth/auth.module';
 import { MeetupsModule } from './meetups/meetups.module';
 import { UsersModule } from './users/users.module';
+import { AnchorsModule } from './anchors/anchors.module';
+import { CheckinsModule } from './checkins/checkins.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     MeetupsModule,
     UsersModule,
+    AnchorsModule,
+    CheckinsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
