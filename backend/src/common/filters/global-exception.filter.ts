@@ -61,7 +61,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   private codeForStatus(status: number): string {
     switch (status) {
       case HttpStatus.BAD_REQUEST:
-        return 'INVALID_LOCATION';
+        // 문서 12장 에러 코드는 도메인별 PiumApiException 서브클래스로 던져지므로
+        // (INVALID_LOCATION/OUT_OF_RANGE 등) 여기 떨어지는 건 문서에 코드가 없는
+        // 일반 검증 오류(ValidationPipe 등)뿐이다 — 도메인 무관한 일반 코드를 쓴다.
+        return 'VALIDATION_ERROR';
       case HttpStatus.UNAUTHORIZED:
         return 'UNAUTHORIZED';
       case HttpStatus.FORBIDDEN:

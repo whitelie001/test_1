@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
+import { createPiumValidationPipe } from '../src/common/pipes/pium-validation-pipe';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
@@ -16,7 +17,7 @@ describe('AppController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('v1');
-    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+    app.useGlobalPipes(createPiumValidationPipe());
     app.useGlobalFilters(new GlobalExceptionFilter());
     app.useGlobalInterceptors(new ResponseEnvelopeInterceptor());
     await app.init();

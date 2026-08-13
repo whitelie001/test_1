@@ -47,6 +47,8 @@ dependencies:
   geolocator: ^13.0.2
   # 날짜/시간 처리
   intl: ^0.19.0
+  # 활동 공유 피드용 사진/영상 선택
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

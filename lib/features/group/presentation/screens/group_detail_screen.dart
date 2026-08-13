@@ -73,23 +73,27 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen> {
                   Text(meetup.description!),
                 ],
                 const SizedBox(height: 24),
-                Row(
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     ElevatedButton(
                       onPressed: (_isProcessing || meetup.isFull) ? null : _join,
                       child: Text(meetup.isFull ? '정원 마감' : '가입하기'),
                     ),
-                    const SizedBox(width: 8),
                     OutlinedButton(
                       onPressed: _isProcessing ? null : _leave,
                       child: const Text('탈퇴하기'),
                     ),
-                    const SizedBox(width: 8),
                     TextButton(
                       onPressed: () => context.push(
                         '/meetups/${meetup.id}/checkin?lat=${meetup.lat}&lng=${meetup.lng}',
                       ),
                       child: const Text('GPS 체크인'),
+                    ),
+                    TextButton(
+                      onPressed: () => context.push('/meetups/${meetup.id}/feed'),
+                      child: const Text('활동 피드'),
                     ),
                   ],
                 ),
