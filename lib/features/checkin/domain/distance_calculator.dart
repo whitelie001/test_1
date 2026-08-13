@@ -1,7 +1,5 @@
 import 'package:geolocator/geolocator.dart';
 
-import '../../../core/constants/checkin_constants.dart';
-
 /// 두 좌표 간 거리(미터)를 계산하는 인터페이스.
 ///
 /// 실제 구현([GeolocatorDistanceCalculator])은 플랫폼 채널을 통하지 않는
@@ -28,10 +26,10 @@ class GeolocatorDistanceCalculator implements DistanceCalculator {
   }
 }
 
-/// 계산된 거리가 체크인 인정 반경 이내인지 판정한다.
-bool isWithinCheckinRadius(
-  double distanceMeters, {
-  double radius = CheckinConstants.checkInRadiusMeters,
-}) {
-  return distanceMeters <= radius;
+/// 계산된 거리가 주어진 반경 이내인지 판정한다.
+///
+/// 반경은 호출부에서 명시한다 (모임 체크인은 100m, 팀장 앵커는 30m로 서로
+/// 다르므로 이 함수 자체는 기본값을 갖지 않는다).
+bool isWithinRadius(double distanceMeters, double radiusMeters) {
+  return distanceMeters <= radiusMeters;
 }
