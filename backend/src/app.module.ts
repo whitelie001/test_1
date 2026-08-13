@@ -15,6 +15,8 @@ import { CheckinsModule } from './checkins/checkins.module';
 import { GrowthModule } from './growth/growth.module';
 import { RankingsModule } from './rankings/rankings.module';
 import { FeedModule } from './feed/feed.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { FeedModule } from './feed/feed.module';
     GrowthModule,
     RankingsModule,
     FeedModule,
+    NotificationsModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -2,15 +2,16 @@ import 'package:go_router/go_router.dart';
 
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/checkin/presentation/screens/checkin_screen.dart';
+import '../features/events/presentation/screens/events_screen.dart';
 import '../features/feed/presentation/screens/feed_screen.dart';
 import '../features/group/presentation/screens/group_create_screen.dart';
 import '../features/group/presentation/screens/group_detail_screen.dart';
 import '../features/group/presentation/screens/group_list_screen.dart';
+import '../features/notifications/presentation/screens/notifications_screen.dart';
 import '../features/ranking/presentation/screens/ranking_screen.dart';
 
 /// 앱 전역 라우팅 설정.
 ///
-/// 이벤트/알림 등 나머지 화면은 각 기능 구현 단계에서 라우트를 추가한다.
 /// 로그인 상태에 따른 자동 리다이렉트(redirect)는 사용자 세션 확인 로직이
 /// 붙는 다음 단계에서 도입한다 — 지금은 로그인 성공 시 명시적
 /// `context.go('/')` 로 전환한다.
@@ -29,11 +30,21 @@ final GoRouter piumRouter = GoRouter(
         onCreatePressed: () => piumRouter.push('/meetups/new'),
         onMeetupTap: (id) => piumRouter.push('/meetups/$id'),
         onRankingsPressed: () => piumRouter.push('/rankings'),
+        onNotificationsPressed: () => piumRouter.push('/notifications'),
+        onEventsPressed: () => piumRouter.push('/events'),
       ),
     ),
     GoRoute(
       path: '/rankings',
       builder: (context, state) => const RankingScreen(),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (context, state) => const NotificationsScreen(),
+    ),
+    GoRoute(
+      path: '/events',
+      builder: (context, state) => const EventsScreen(),
     ),
     GoRoute(
       path: '/meetups/new',

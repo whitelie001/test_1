@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { MeetupNotFoundException } from '../common/exceptions/pium-api.exception';
 import {
   computeLargeGroupScore,
@@ -28,7 +29,10 @@ interface RawMetrics {
 
 @Injectable()
 export class GrowthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   async getGrowth(meetupId: string) {
     const meetup = await this.prisma.meetup.findUnique({ where: { id: meetupId } });
@@ -73,7 +77,7 @@ export class GrowthService {
           stage.level,
         );
 
-    await this.recordHistoryIfChanged(meetupId, stage, score, metrics);
+    await this.recordHistoryIfChanged(meetupId, meetup.name, stage, score, metrics);
 
     return {
       growth_level: stage.level,
@@ -144,6 +148,7 @@ export class GrowthService {
 
   private async recordHistoryIfChanged(
     meetupId: string,
+    meetupName: string,
     stage: GrowthStage,
     score: number,
     metrics: RawMetrics,
@@ -162,6 +167,14 @@ export class GrowthService {
         metrics: metrics as unknown as Prisma.InputJsonValue,
       },
     });
+
+    await this.notificationsService.notifyMeetupMembers(
+      meetupId,
+      'growth_achieved',
+      '피움 성장 알림',
+      `${meetupName} 모임이 '${stage.name}' 단계로 성장했어요!`,
+      { meetup_id: meetupId, growth_level: stage.level, growth_name: stage.name },
+    );
   }
 
   /// 모임의 원시 지표를 세션/체크인 기록에서 계산한다.

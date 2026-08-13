@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { AnchorsService } from '../anchors/anchors.service';
 import { GrowthService } from '../growth/growth.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import {
   CheckinAlreadyActiveException,
   CheckinNotFoundException,
@@ -44,6 +45,7 @@ export class CheckinsService {
     private readonly prisma: PrismaService,
     private readonly anchorsService: AnchorsService,
     private readonly growthService: GrowthService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async enter(meetupId: string, userId: string, dto: CheckinEnterDto) {
@@ -181,6 +183,14 @@ export class CheckinsService {
       select: { meetupId: true },
     });
     await this.growthService.getGrowth(session.meetupId);
+
+    await this.notificationsService.notifyUser(
+      userId,
+      'checkin_completed',
+      '출석 완료',
+      `체크인이 완료됐어요. +${score}점을 획득했습니다.`,
+      { checkin_id: checkin.id, meetup_id: session.meetupId, pium_score_earned: score },
+    );
 
     return {
       status: 'completed',

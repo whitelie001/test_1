@@ -129,3 +129,9 @@ export class AnchorTimeExceededException extends PiumApiException {
     );
   }
 }
+
+export class EventNotFoundException extends PiumApiException {
+  constructor() {
+    super('EVENT_NOT_FOUND', '이벤트를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
+  }
+}
