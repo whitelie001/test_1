@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/network/api_exception.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../domain/pium_event.dart';
 import '../events_providers.dart';
 
@@ -81,7 +82,7 @@ class EventsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('이벤트')),
       body: eventsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('$error')),
+        error: (error, _) => ErrorView(error: error),
         data: (events) {
           if (events.isEmpty) {
             return const Center(child: Text('진행 중인 이벤트가 없어요.'));

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/network/api_exception.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../domain/reaction_emojis.dart';
 import '../feed_providers.dart';
 
@@ -73,7 +74,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
           Expanded(
             child: feedAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stackTrace) => Center(child: Text('$error')),
+              error: (error, stackTrace) => ErrorView(error: error),
               data: (posts) {
                 if (posts.isEmpty) {
                   return const Center(child: Text('아직 활동 기록이 없어요.'));

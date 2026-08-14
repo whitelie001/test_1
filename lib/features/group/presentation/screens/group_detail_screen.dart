@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/network/api_exception.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../group_providers.dart';
 import '../widgets/growth_mascot_widget.dart';
 
@@ -55,7 +56,7 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen> {
       appBar: AppBar(title: const Text('모임 상세')),
       body: meetupAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('$error')),
+        error: (error, _) => ErrorView(error: error),
         data: (meetup) {
           return Padding(
             padding: const EdgeInsets.all(16),

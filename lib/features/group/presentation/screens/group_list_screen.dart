@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/network/api_exception.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../group_providers.dart';
 
 /// 운동 모임 목록 화면. 반경 내 모임을 서버에서 불러와 보여준다.
@@ -61,7 +61,7 @@ class GroupListScreen extends ConsumerWidget {
         onRefresh: () => ref.refresh(meetupListProvider.future),
         child: meetupsAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => _ErrorView(error: error),
+          error: (error, _) => ErrorView(error: error),
           data: (result) {
             if (result.meetups.isEmpty) {
               return const _EmptyView();
@@ -103,21 +103,5 @@ class _EmptyView extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.error});
-
-  final Object error;
-
-  @override
-  Widget build(BuildContext context) {
-    final message = switch (error) {
-      PiumApiException(:final message) => message,
-      NetworkUnavailableException(:final message) => message,
-      _ => '알 수 없는 오류가 발생했습니다',
-    };
-    return Center(child: Text(message));
   }
 }

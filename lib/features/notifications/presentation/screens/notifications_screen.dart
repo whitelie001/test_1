@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/error_view.dart';
 import '../../domain/notification_type_icon.dart';
 import '../notifications_providers.dart';
 
@@ -27,7 +28,7 @@ class NotificationsScreen extends ConsumerWidget {
       ),
       body: notificationsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('$error')),
+        error: (error, _) => ErrorView(error: error),
         data: (notifications) {
           if (notifications.isEmpty) {
             return const Center(child: Text('알림이 없어요.'));

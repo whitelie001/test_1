@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/api_exception.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../../auth/presentation/auth_providers.dart';
 import '../../domain/user_profile.dart';
 import '../profile_providers.dart';
@@ -60,7 +61,7 @@ class ProfileScreen extends ConsumerWidget {
       ),
       body: profileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('$error')),
+        error: (error, _) => ErrorView(error: error),
         data: (profile) => RefreshIndicator(
           onRefresh: () => ref.refresh(userProfileProvider.future),
           child: ListView(

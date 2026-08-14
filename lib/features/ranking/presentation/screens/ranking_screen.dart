@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/error_view.dart';
 import '../../../group/domain/growth_stage_icons.dart';
 import '../ranking_providers.dart';
 
@@ -16,7 +17,7 @@ class RankingScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('전국 모임 랭킹')),
       body: rankingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(child: Text('$error')),
+        error: (error, stackTrace) => ErrorView(error: error),
         data: (rankings) {
           if (rankings.isEmpty) {
             return const Center(child: Text('아직 랭킹에 표시할 모임이 없어요.'));
