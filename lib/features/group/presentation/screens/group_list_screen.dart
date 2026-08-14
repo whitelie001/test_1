@@ -13,6 +13,7 @@ class GroupListScreen extends ConsumerWidget {
     this.onRankingsPressed,
     this.onNotificationsPressed,
     this.onEventsPressed,
+    this.onProfilePressed,
   });
 
   final VoidCallback? onCreatePressed;
@@ -20,6 +21,7 @@ class GroupListScreen extends ConsumerWidget {
   final VoidCallback? onRankingsPressed;
   final VoidCallback? onNotificationsPressed;
   final VoidCallback? onEventsPressed;
+  final VoidCallback? onProfilePressed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,6 +31,11 @@ class GroupListScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('pium'),
         actions: [
+          IconButton(
+            onPressed: onProfilePressed,
+            icon: const Icon(Icons.person_outline),
+            tooltip: '내 프로필',
+          ),
           IconButton(
             onPressed: onEventsPressed,
             icon: const Icon(Icons.campaign_outlined),

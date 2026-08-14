@@ -29,3 +29,15 @@ export function seoulYearMonth(date: Date): { year: number; month: number } {
   const kstDate = new Date(date.getTime() + KST_OFFSET_MS);
   return { year: kstDate.getUTCFullYear(), month: kstDate.getUTCMonth() + 1 };
 }
+
+/// 주어진 시각을 KST 기준 `YYYY-MM-DD` 문자열로 변환한다. (주의:
+/// `seoulStartOfDay(date).toISOString().slice(0,10)`은 KST 자정을 UTC로
+/// 표현하는 과정에서 하루 전 날짜가 나올 수 있어 쓰지 않는다 — 항상 이
+/// 함수로 KST 달력일을 구한다.)
+export function seoulDateKey(date: Date): string {
+  const kstDate = new Date(date.getTime() + KST_OFFSET_MS);
+  const y = kstDate.getUTCFullYear();
+  const m = String(kstDate.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(kstDate.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}

@@ -8,6 +8,7 @@ import '../features/group/presentation/screens/group_create_screen.dart';
 import '../features/group/presentation/screens/group_detail_screen.dart';
 import '../features/group/presentation/screens/group_list_screen.dart';
 import '../features/notifications/presentation/screens/notifications_screen.dart';
+import '../features/profile/presentation/screens/profile_screen.dart';
 import '../features/ranking/presentation/screens/ranking_screen.dart';
 
 /// 앱 전역 라우팅 설정.
@@ -32,6 +33,7 @@ final GoRouter piumRouter = GoRouter(
         onRankingsPressed: () => piumRouter.push('/rankings'),
         onNotificationsPressed: () => piumRouter.push('/notifications'),
         onEventsPressed: () => piumRouter.push('/events'),
+        onProfilePressed: () => piumRouter.push('/profile'),
       ),
     ),
     GoRoute(
@@ -45,6 +47,12 @@ final GoRouter piumRouter = GoRouter(
     GoRoute(
       path: '/events',
       builder: (context, state) => const EventsScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => ProfileScreen(
+        onLoggedOut: () => piumRouter.go('/login'),
+      ),
     ),
     GoRoute(
       path: '/meetups/new',
